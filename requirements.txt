@@ -5,3 +5,5 @@ numpy
 pytest
 joblib
 pyarrow
+scikit-learn
+httpx
