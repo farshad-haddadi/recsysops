@@ -1,149 +1,61 @@
 # RecSysOps
-### Production-Ready Recommendation System
 
-> 🚧 **Status: Under Active Development**
->
-> This project is currently being built incrementally as part of a deep dive into recommendation systems, ML engineering, and production ML infrastructure. New features, models, evaluations, and deployment components are being added over time.
+A production-style Recommendation System + MLOps project built with Matrix Factorization, FastAPI, Docker, and GitHub Actions.
 
----
-
-## Overview
-
-RecSysOps is an end-to-end recommendation system designed to demonstrate modern machine learning engineering practices beyond notebook-based experimentation.
-
-The project explores how recommendation models are developed, evaluated, deployed, and maintained in production environments.
-
-The system will evolve from simple recommendation baselines to a scalable two-tower neural retrieval architecture while maintaining clean software engineering principles, reproducibility, and modular design.
+![Python](https://img.shields.io/badge/Python-3.11-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-API-green)
+![Docker](https://img.shields.io/badge/Docker-Containerization-blue)
+![CI](https://img.shields.io/badge/CI-GitHub%20Actions-success)
 
 ---
 
-## Objectives
+# Overview
 
-This project aims to demonstrate:
+RecSysOps is an end-to-end recommendation system built on the MovieLens 100K dataset.
 
-- Recommendation system fundamentals
-- Machine learning system design
-- Production-oriented code organization
-- Model evaluation and experimentation
-- API-based model serving
-- Reproducible ML workflows
-- MLOps best practices
+The project demonstrates:
+
+- Recommendation model training
+- Matrix Factorization implementation
+- Model persistence
+- Experiment tracking
+- FastAPI serving layer
+- Docker containerization
+- Automated testing
+- CI/CD with GitHub Actions
+
+The goal is to simulate how a recommendation model would be developed, evaluated, deployed, and maintained in a real-world MLOps environment.
 
 ---
 
-## Planned Architecture
+# Architecture
 
 ```text
-                    Offline Training
-┌─────────────────────────────────────────────┐
-│ User-Item Interaction Data                  │
-│ Feature Engineering                         │
-│ Model Training                              │
-│ Evaluation                                  │
-│ Artifact Export                             │
-└─────────────────────────────────────────────┘
-                     │
-                     ▼
-           Trained Model Artifacts
-                     │
-                     ▼
-                 FastAPI Service
-┌─────────────────────────────────────────────┐
-│ Request Validation                          │
-│ Recommendation Service                      │
-│ Candidate Retrieval                         │
-│ Ranking                                     │
-│ Top-K Recommendations                       │
-└─────────────────────────────────────────────┘
+MovieLens 100K Dataset
+          |
+          v
+Training Pipeline
+          |
+          v
+Matrix Factorization Model
+          |
+          v
+Model Artifact (.pkl)
+          |
+          v
+Model Registry
+          |
+          v
+FastAPI Service
+    ├── /health
+    ├── /recommend
+    ├── /model-info
+    └── /metrics
 ```
 
 ---
 
-## Models
-
-### Baseline Models
-
-- Popularity-Based Recommender
-- Matrix Factorization
-
-### Neural Models
-
-- Two-Tower Retrieval Model (PyTorch)
-
-Future extensions may include:
-
-- Feature-based ranking models
-- Approximate nearest-neighbor retrieval
-- Hybrid recommendation architectures
-
----
-
-## Tech Stack
-
-### Machine Learning
-
-- Python
-- PyTorch
-- NumPy
-- Pandas
-- Scikit-Learn
-
-### Backend
-
-- FastAPI
-- Pydantic
-
-### MLOps
-
-- MLflow
-- Docker
-
-### Testing
-
-- Pytest
-
-### Retrieval (Planned)
-
-- FAISS
-
----
-
-## Current Progress
-
-### Repository Setup
-
-- [x] Project structure
-- [x] GitHub repository
-- [x] Python virtual environment
-- [x] Testing framework setup
-
-### Recommendation Models
-
-- [ ] Popularity Recommender
-- [ ] Matrix Factorization
-- [ ] Two-Tower Neural Recommender
-
-### Evaluation
-
-- [ ] Recall@K
-- [ ] Precision@K
-- [ ] NDCG@K
-
-### API
-
-- [ ] FastAPI service
-- [ ] Recommendation endpoint
-- [ ] Health endpoint
-
-### MLOps
-
-- [ ] MLflow experiment tracking
-- [ ] Docker deployment
-- [ ] CI/CD pipeline
-
----
-
-## Project Structure
+# Project Structure
 
 ```text
 recsysops/
@@ -152,67 +64,371 @@ recsysops/
 │   ├── api/
 │   ├── core/
 │   ├── schemas/
-│   └── services/
+│   └── main.py
 │
 ├── training/
+│
 ├── inference/
-├── configs/
-├── artifacts/
+│
 ├── tests/
-├── scripts/
+│
+├── artifacts/
+│   ├── experiments/
+│   └── models/
+│
 ├── docker/
 │
-├── README.md
-├── .gitignore
-└── pyproject.toml
+├── configs/
+│
+├── .github/
+│   └── workflows/
+│       └── tests.yml
+│
+├── requirements.txt
+│
+└── README.md
 ```
 
 ---
 
-## Learning Goals
+# Dataset
 
-This project is intentionally being developed from first principles.
+This project uses the MovieLens 100K dataset.
 
-Rather than relying heavily on high-level recommendation frameworks, the focus is on understanding:
+Dataset statistics:
 
-- Why recommendation systems work
-- How embeddings are learned
-- Offline vs online serving architectures
-- Retrieval and ranking systems
-- Model evaluation methodology
-- Production deployment workflows
+- Users: 943
+- Movies: 1,682
+- Ratings: 100,000
 
----
+Source:
 
-## Future Work
-
-- Two-tower retrieval architecture
-- Candidate generation pipeline
-- Vector similarity search
-- Experiment tracking with MLflow
-- Containerized deployment
-- Monitoring and observability
-- Recommendation explainability
+https://grouplens.org/datasets/movielens/
 
 ---
 
-## Author
+# Model
 
-**Farshad Haddadi**
+Algorithm:
 
-Computer Science Student  
-University of Toronto
+- Matrix Factorization
 
-Interested in:
+Model parameters:
 
-- Machine Learning Engineering
-- Recommendation Systems
-- Applied AI
-- MLOps
-- Distributed Systems
+- Latent Factors: 20
+- Learning Rate: 0.01
+- Regularization: 0.02
+- Epochs: 10
+
+The trained model is persisted as:
+
+```text
+artifacts/models/matrix_factorization.pkl
+```
 
 ---
 
-## Disclaimer
+# Experiment Tracking
 
-This repository is a learning-focused engineering project. The goal is not only to build a recommendation system but to develop a deep understanding of the software engineering, machine learning, and deployment principles required to operate such systems in production.
+Training runs automatically generate experiment metadata.
+
+Stored in:
+
+```text
+artifacts/experiments/
+```
+
+Example:
+
+```json
+{
+  "model_name": "matrix_factorization",
+  "timestamp_utc": "20260604_202645",
+  "params": {
+    "num_factors": 20,
+    "learning_rate": 0.01
+  },
+  "metrics": {
+    "precision_at_k": 0.0036,
+    "recall_at_k": 0.0361
+  }
+}
+```
+
+---
+
+# Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/farshad-haddadi/recsysops.git
+cd recsysops
+```
+
+Create virtual environment:
+
+```bash
+python -m venv .venv
+```
+
+Activate:
+
+Windows
+
+```bash
+.venv\Scripts\activate
+```
+
+Linux / Mac
+
+```bash
+source .venv/bin/activate
+```
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+# Train Model
+
+Run training pipeline:
+
+```bash
+python training/train_matrix_factorization.py
+```
+
+This generates:
+
+```text
+artifacts/models/matrix_factorization.pkl
+artifacts/experiments/*.json
+```
+
+---
+
+# Run API
+
+Start FastAPI server:
+
+```bash
+uvicorn app.main:app --reload
+```
+
+Swagger UI:
+
+```text
+http://localhost:8000/docs
+```
+
+---
+
+# API Endpoints
+
+## Health Check
+
+```http
+GET /health
+```
+
+Response:
+
+```json
+{
+  "status": "ok"
+}
+```
+
+---
+
+## Recommendations
+
+```http
+POST /recommend
+```
+
+Request:
+
+```json
+{
+  "user_id": 1,
+  "k": 10
+}
+```
+
+Response:
+
+```json
+{
+  "user_id": 1,
+  "model_name": "matrix_factorization",
+  "recommendations": [
+    {
+      "rank": 1,
+      "item_id": 50,
+      "title": "Star Wars (1977)",
+      "score": 4.12
+    }
+  ]
+}
+```
+
+---
+
+## Model Information
+
+```http
+GET /model-info
+```
+
+Response:
+
+```json
+{
+  "model_name": "matrix_factorization",
+  "model_path": "artifacts/models/matrix_factorization.pkl",
+  "num_users": 943,
+  "num_items": 1679,
+  "num_factors": 20
+}
+```
+
+---
+
+## Metrics
+
+```http
+GET /metrics
+```
+
+Response:
+
+```json
+{
+  "model_name": "matrix_factorization",
+  "metrics": {
+    "precision_at_k": 0.0036,
+    "recall_at_k": 0.0361
+  }
+}
+```
+
+---
+
+# Running Tests
+
+Run all tests:
+
+```bash
+python -m pytest
+```
+
+Expected:
+
+```text
+13 passed
+```
+
+---
+
+# Docker
+
+Build and start:
+
+```bash
+docker compose up --build
+```
+
+API available at:
+
+```text
+http://localhost:8000
+```
+
+Swagger:
+
+```text
+http://localhost:8000/docs
+```
+
+Stop containers:
+
+```bash
+docker compose down
+```
+
+---
+
+# CI/CD
+
+GitHub Actions automatically:
+
+- Installs dependencies
+- Runs tests
+- Validates pull requests
+- Validates pushes to main
+
+Workflow file:
+
+```text
+.github/workflows/tests.yml
+```
+
+---
+
+# Results
+
+Latest evaluation metrics:
+
+| Metric | Value |
+|----------|----------|
+| Precision@10 | 0.0036 |
+| Recall@10 | 0.0361 |
+| Users Evaluated | 943 |
+
+---
+
+# Future Improvements
+
+Possible next steps:
+
+- Hyperparameter tuning
+- MLflow integration
+- Prometheus monitoring
+- Kubernetes deployment
+- Feature store integration
+- Implicit feedback models
+- Neural collaborative filtering
+- A/B testing framework
+
+---
+
+# Tech Stack
+
+- Python 3.11
+- FastAPI
+- NumPy
+- Pandas
+- PyTest
+- Docker
+- GitHub Actions
+
+---
+
+# Author
+
+Farshad Haddadi
+
+GitHub:
+
+https://github.com/farshad-haddadi
+
+---
+
+# License
+
+This project is for educational and portfolio purposes.
