@@ -25,3 +25,12 @@ def recommend(request: RecommendationRequest) -> RecommendationResponse:
 
     except RuntimeError as error:
         raise HTTPException(status_code=503, detail=str(error)) from error
+
+
+@router.get("/model-info")
+def model_info():
+    try:
+        return model_registry.get_model_info()
+
+    except RuntimeError as error:
+        raise HTTPException(status_code=503, detail=str(error)) from error
