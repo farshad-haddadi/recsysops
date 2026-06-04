@@ -390,20 +390,6 @@ Latest evaluation metrics:
 | Recall@10 | 0.0361 |
 | Users Evaluated | 943 |
 
----
-
-# Future Improvements
-
-Possible next steps:
-
-- Hyperparameter tuning
-- MLflow integration
-- Prometheus monitoring
-- Kubernetes deployment
-- Feature store integration
-- Implicit feedback models
-- Neural collaborative filtering
-- A/B testing framework
 
 ---
 
