@@ -57,6 +57,9 @@ def test_model_info_endpoint_returns_metadata():
     assert data["num_factors"] == 20
 
 def test_metrics_endpoint_returns_response():
+    if not MODEL_ARTIFACT_PATH.exists():
+        pytest.skip("Model artifact not available in CI environment")
+
     with TestClient(app) as client:
         response = client.get("/metrics")
 
