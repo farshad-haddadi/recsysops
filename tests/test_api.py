@@ -55,3 +55,13 @@ def test_model_info_endpoint_returns_metadata():
     assert data["num_users"] > 0
     assert data["num_items"] > 0
     assert data["num_factors"] == 20
+
+def test_metrics_endpoint_returns_response():
+    with TestClient(app) as client:
+        response = client.get("/metrics")
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert isinstance(data, dict)

@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException
 
+from app.core.metrics_registry import metrics_registry
 from app.core.model_registry import model_registry
 from app.schemas.recommendation import (
     RecommendationRequest,
@@ -34,3 +35,8 @@ def model_info():
 
     except RuntimeError as error:
         raise HTTPException(status_code=503, detail=str(error)) from error
+
+
+@router.get("/metrics")
+def metrics():
+    return metrics_registry.get_latest_metrics()
