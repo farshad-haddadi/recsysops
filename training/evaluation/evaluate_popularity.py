@@ -4,6 +4,7 @@ from app.services.popularity_recommender import PopularityRecommender
 from training.data.load_movielens import load_movielens_100k
 from training.evaluation.metrics import precision_at_k, recall_at_k
 from training.evaluation.split import leave_one_out_split
+from training.experiment_tracking.local_tracker import save_experiment_result
 
 
 def evaluate_popularity(
@@ -57,9 +58,17 @@ def evaluate_popularity(
 
 
 if __name__ == "__main__":
+    k = 10
+
     results = evaluate_popularity(
         data_dir="data/raw/ml-100k",
-        k=10,
+        k=k,
+    )
+
+    artifact_path = save_experiment_result(
+        model_name="popularity",
+        metrics=results,
+        params={"k": k},
     )
 
     print("Popularity Recommender Evaluation")
@@ -67,3 +76,5 @@ if __name__ == "__main__":
 
     for metric_name, metric_value in results.items():
         print(f"{metric_name}: {metric_value:.4f}")
+
+    print(f"\nSaved experiment result to: {artifact_path}")

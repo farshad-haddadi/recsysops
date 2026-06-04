@@ -4,16 +4,19 @@ from app.services.matrix_factorization_recommender import (
     MatrixFactorizationRecommender,
 )
 from training.data.load_movielens import load_movielens_100k
-from training.evaluation.metrics import (
-    precision_at_k,
-    recall_at_k,
-)
+from training.evaluation.metrics import precision_at_k, recall_at_k
 from training.evaluation.split import leave_one_out_split
+from training.experiment_tracking.local_tracker import save_experiment_result
 
 
 def evaluate_matrix_factorization(
     data_dir: str | Path,
     k: int = 10,
+    num_factors: int = 20,
+    learning_rate: float = 0.01,
+    regularization: float = 0.02,
+    num_epochs: int = 10,
+    random_state: int = 42,
 ) -> dict[str, float]:
     ratings, items = load_movielens_100k(data_dir)
 
@@ -22,11 +25,11 @@ def evaluate_matrix_factorization(
     recommender = MatrixFactorizationRecommender(
         ratings=train_ratings,
         items=items,
-        num_factors=20,
-        learning_rate=0.01,
-        regularization=0.02,
-        num_epochs=10,
-        random_state=42,
+        num_factors=num_factors,
+        learning_rate=learning_rate,
+        regularization=regularization,
+        num_epochs=num_epochs,
+        random_state=random_state,
     )
 
     precision_scores = []
@@ -40,10 +43,7 @@ def evaluate_matrix_factorization(
             k=k,
         )
 
-        recommended_items = [
-            rec["item_id"]
-            for rec in recommendations
-        ]
+        recommended_items = [rec["item_id"] for rec in recommendations]
 
         precision_scores.append(
             precision_at_k(
@@ -62,21 +62,32 @@ def evaluate_matrix_factorization(
         )
 
     return {
-        "precision_at_k": sum(precision_scores)
-        / len(precision_scores),
-        "recall_at_k": sum(recall_scores)
-        / len(recall_scores),
-        "num_users_evaluated": float(
-            len(test_ratings["user_id"].unique())
-        ),
+        "precision_at_k": sum(precision_scores) / len(precision_scores),
+        "recall_at_k": sum(recall_scores) / len(recall_scores),
+        "num_users_evaluated": float(len(test_ratings["user_id"].unique())),
         "k": float(k),
     }
 
 
 if __name__ == "__main__":
+    params = {
+        "k": 10,
+        "num_factors": 20,
+        "learning_rate": 0.01,
+        "regularization": 0.02,
+        "num_epochs": 10,
+        "random_state": 42,
+    }
+
     results = evaluate_matrix_factorization(
         data_dir="data/raw/ml-100k",
-        k=10,
+        **params,
+    )
+
+    artifact_path = save_experiment_result(
+        model_name="matrix_factorization",
+        metrics=results,
+        params=params,
     )
 
     print("Matrix Factorization Evaluation")
@@ -84,3 +95,5 @@ if __name__ == "__main__":
 
     for metric_name, metric_value in results.items():
         print(f"{metric_name}: {metric_value:.4f}")
+
+    print(f"\nSaved experiment result to: {artifact_path}")
