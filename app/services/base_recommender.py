@@ -1,16 +1,11 @@
-from typing import List, Dict
+from abc import ABC, abstractmethod
+from typing import Any
 
 
-class BaseRecommender:
-    def recommend(self, user_id: str, k: int = 10) -> List[Dict]:
+class BaseRecommender(ABC):
+    @abstractmethod
+    def recommend(self, user_id: int, k: int = 10) -> list[dict[str, Any]]:
         """
         Return top-k recommendations for a user.
-
-        Args:
-            user_id (str): user identifier
-            k (int): number of recommendations
-
-        Returns:
-            List[Dict]: list of {item_id, score}
         """
         raise NotImplementedError
