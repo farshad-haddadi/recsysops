@@ -1,61 +1,194 @@
 # RecSysOps
 
-A production-style Recommendation System + MLOps project built with Matrix Factorization, FastAPI, Docker, and GitHub Actions.
+A production-style Recommendation System + MLOps project built with FastAPI, PyTorch, Docker, GitHub Actions, Matrix Factorization, and Two-Tower Retrieval.
 
-![Python](https://img.shields.io/badge/Python-3.11-blue)
-![FastAPI](https://img.shields.io/badge/FastAPI-API-green)
-![Docker](https://img.shields.io/badge/Docker-Containerization-blue)
-![CI](https://img.shields.io/badge/CI-GitHub%20Actions-success)
+## Overview
 
----
+RecSysOps is an end-to-end recommendation system designed to demonstrate how machine learning models can be trained, tracked, tested, deployed, and served through a production-style API.
 
-# Overview
+The project supports multiple recommendation algorithms and allows runtime model selection through a FastAPI service.
 
-RecSysOps is an end-to-end recommendation system built on the MovieLens 100K dataset.
-
-The project demonstrates:
-
-- Recommendation model training
-- Matrix Factorization implementation
-- Model persistence
-- Experiment tracking
-- FastAPI serving layer
-- Docker containerization
-- Automated testing
-- CI/CD with GitHub Actions
-
-The goal is to simulate how a recommendation model would be developed, evaluated, deployed, and maintained in a real-world MLOps environment.
+Built using the MovieLens 100K dataset.
 
 ---
 
-# Architecture
+## Features
+
+### Recommendation Models
+
+#### Matrix Factorization
+
+* Collaborative filtering recommender
+* User-item latent embeddings
+* Model persistence using Pickle
+* Fast recommendation generation
+
+#### Two-Tower Retrieval Model
+
+* Neural recommendation architecture implemented in PyTorch
+* Separate user and item embedding towers
+* Negative sampling training pipeline
+* Model checkpoint persistence
+* Experiment tracking integration
+
+---
+
+## MLOps Features
+
+### Experiment Tracking
+
+Training runs automatically generate experiment artifacts containing:
+
+* Model name
+* Hyperparameters
+* Training metrics
+* Timestamps
+
+Example:
+
+```json
+{
+  "model_name": "two_tower",
+  "params": {
+    "embedding_dim": 64,
+    "epochs": 5,
+    "learning_rate": 0.001
+  },
+  "metrics": {
+    "final_loss": 0.3782
+  }
+}
+```
+
+Stored in:
 
 ```text
-MovieLens 100K Dataset
-          |
-          v
-Training Pipeline
-          |
-          v
-Matrix Factorization Model
-          |
-          v
-Model Artifact (.pkl)
-          |
-          v
-Model Registry
-          |
-          v
-FastAPI Service
-    ├── /health
-    ├── /recommend
-    ├── /model-info
-    └── /metrics
+artifacts/experiments/
 ```
 
 ---
 
-# Project Structure
+### Model Persistence
+
+Saved model artifacts:
+
+```text
+artifacts/models/
+├── matrix_factorization.pkl
+└── two_tower.pt
+```
+
+---
+
+### Automated Testing
+
+The project includes automated unit and integration tests covering:
+
+* API endpoints
+* Model loading
+* Recommendation generation
+* Metrics endpoint
+* Dataset creation
+* Two-Tower model
+* Experiment tracking
+
+Current status:
+
+```text
+20+ passing tests
+```
+
+---
+
+### CI/CD
+
+GitHub Actions automatically runs the test suite on every push.
+
+Pipeline includes:
+
+* Dependency installation
+* Test execution
+* Validation checks
+
+---
+
+### Docker Support
+
+Application can be containerized and executed consistently across environments.
+
+```bash
+docker build -t recsysops .
+docker run -p 8000:8000 recsysops
+```
+
+---
+
+## API Endpoints
+
+### Generate Recommendations
+
+```http
+POST /recommend
+```
+
+Example request:
+
+```json
+{
+  "user_id": 1,
+  "k": 10,
+  "model_name": "matrix_factorization"
+}
+```
+
+Supported models:
+
+* matrix_factorization
+* two_tower
+
+---
+
+### Model Information
+
+```http
+GET /model-info
+```
+
+Returns metadata about available models.
+
+---
+
+### Compare Models
+
+```http
+GET /compare-models
+```
+
+Returns a comparison of supported recommendation models.
+
+---
+
+### Metrics
+
+```http
+GET /metrics
+```
+
+Returns operational metrics.
+
+---
+
+### Health Check
+
+```http
+GET /health
+```
+
+Returns service health status.
+
+---
+
+## Project Structure
 
 ```text
 recsysops/
@@ -63,10 +196,14 @@ recsysops/
 ├── app/
 │   ├── api/
 │   ├── core/
-│   ├── schemas/
+│   ├── routes/
 │   └── main.py
 │
 ├── training/
+│   ├── data/
+│   ├── models/
+│   ├── evaluation/
+│   └── experiment_tracking/
 │
 ├── inference/
 │
@@ -78,113 +215,16 @@ recsysops/
 │
 ├── docker/
 │
-├── configs/
+├── .github/workflows/
 │
-├── .github/
-│   └── workflows/
-│       └── tests.yml
-│
-├── requirements.txt
-│
+├── Dockerfile
+├── docker-compose.yml
 └── README.md
 ```
 
 ---
 
-# Dataset
-
-This project uses the MovieLens 100K dataset.
-
-Dataset statistics:
-
-- Users: 943
-- Movies: 1,682
-- Ratings: 100,000
-
-Source:
-
-https://grouplens.org/datasets/movielens/
-
----
-
-# Model
-
-Algorithm:
-
-- Matrix Factorization
-
-Model parameters:
-
-- Latent Factors: 20
-- Learning Rate: 0.01
-- Regularization: 0.02
-- Epochs: 10
-
-The trained model is persisted as:
-
-```text
-artifacts/models/matrix_factorization.pkl
-```
-
----
-
-# Experiment Tracking
-
-Training runs automatically generate experiment metadata.
-
-Stored in:
-
-```text
-artifacts/experiments/
-```
-
-Example:
-
-```json
-{
-  "model_name": "matrix_factorization",
-  "timestamp_utc": "20260604_202645",
-  "params": {
-    "num_factors": 20,
-    "learning_rate": 0.01
-  },
-  "metrics": {
-    "precision_at_k": 0.0036,
-    "recall_at_k": 0.0361
-  }
-}
-```
-
----
-
-# Installation
-
-Clone the repository:
-
-```bash
-git clone https://github.com/farshad-haddadi/recsysops.git
-cd recsysops
-```
-
-Create virtual environment:
-
-```bash
-python -m venv .venv
-```
-
-Activate:
-
-Windows
-
-```bash
-.venv\Scripts\activate
-```
-
-Linux / Mac
-
-```bash
-source .venv/bin/activate
-```
+## Local Development
 
 Install dependencies:
 
@@ -192,31 +232,16 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
----
-
-# Train Model
-
-Run training pipeline:
+Run tests:
 
 ```bash
-python training/train_matrix_factorization.py
+pytest
 ```
 
-This generates:
-
-```text
-artifacts/models/matrix_factorization.pkl
-artifacts/experiments/*.json
-```
-
----
-
-# Run API
-
-Start FastAPI server:
+Run API:
 
 ```bash
-uvicorn app.main:app --reload
+python -m uvicorn app.main:app --reload
 ```
 
 Swagger UI:
@@ -227,194 +252,85 @@ http://localhost:8000/docs
 
 ---
 
-# API Endpoints
+## Training
 
-## Health Check
-
-```http
-GET /health
-```
-
-Response:
-
-```json
-{
-  "status": "ok"
-}
-```
-
----
-
-## Recommendations
-
-```http
-POST /recommend
-```
-
-Request:
-
-```json
-{
-  "user_id": 1,
-  "k": 10
-}
-```
-
-Response:
-
-```json
-{
-  "user_id": 1,
-  "model_name": "matrix_factorization",
-  "recommendations": [
-    {
-      "rank": 1,
-      "item_id": 50,
-      "title": "Star Wars (1977)",
-      "score": 4.12
-    }
-  ]
-}
-```
-
----
-
-## Model Information
-
-```http
-GET /model-info
-```
-
-Response:
-
-```json
-{
-  "model_name": "matrix_factorization",
-  "model_path": "artifacts/models/matrix_factorization.pkl",
-  "num_users": 943,
-  "num_items": 1679,
-  "num_factors": 20
-}
-```
-
----
-
-## Metrics
-
-```http
-GET /metrics
-```
-
-Response:
-
-```json
-{
-  "model_name": "matrix_factorization",
-  "metrics": {
-    "precision_at_k": 0.0036,
-    "recall_at_k": 0.0361
-  }
-}
-```
-
----
-
-# Running Tests
-
-Run all tests:
+### Matrix Factorization
 
 ```bash
-python -m pytest
+python training/train_matrix_factorization.py
 ```
 
-Expected:
-
-```text
-13 passed
-```
-
----
-
-# Docker
-
-Build and start:
+### Two-Tower Retrieval
 
 ```bash
-docker compose up --build
+python training/train_two_tower.py
 ```
 
-API available at:
+Training automatically:
+
+* Saves model artifacts
+* Logs experiment results
+* Generates reproducible outputs
+
+---
+
+## Technology Stack
+
+### Machine Learning
+
+* PyTorch
+* NumPy
+* Pandas
+
+### Backend
+
+* FastAPI
+* Pydantic
+* Uvicorn
+
+### MLOps
+
+* Docker
+* GitHub Actions
+* Experiment Tracking
+
+### Testing
+
+* Pytest
+
+### Dataset
+
+* MovieLens 100K
+
+---
+
+## Architecture
 
 ```text
-http://localhost:8000
-```
-
-Swagger:
-
-```text
-http://localhost:8000/docs
-```
-
-Stop containers:
-
-```bash
-docker compose down
-```
-
----
-
-# CI/CD
-
-GitHub Actions automatically:
-
-- Installs dependencies
-- Runs tests
-- Validates pull requests
-- Validates pushes to main
-
-Workflow file:
-
-```text
-.github/workflows/tests.yml
+MovieLens Dataset
+        │
+        ▼
+ Training Pipelines
+        │
+        ├── Matrix Factorization
+        │
+        └── Two-Tower Retrieval
+        │
+        ▼
+ Model Artifacts
+        │
+        ▼
+ FastAPI Inference Service
+        │
+        ▼
+ Recommendation API
 ```
 
 ---
 
-# Results
-
-Latest evaluation metrics:
-
-| Metric | Value |
-|----------|----------|
-| Precision@10 | 0.0036 |
-| Recall@10 | 0.0361 |
-| Users Evaluated | 943 |
-
-
----
-
-# Tech Stack
-
-- Python 3.11
-- FastAPI
-- NumPy
-- Pandas
-- PyTest
-- Docker
-- GitHub Actions
-
----
-
-# Author
+## Author
 
 Farshad Haddadi
 
 GitHub:
-
 https://github.com/farshad-haddadi
-
----
-
-# License
-
-This project is for educational and portfolio purposes.
