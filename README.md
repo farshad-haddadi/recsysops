@@ -1,332 +1,151 @@
-# RecSysOps
+# RecSysOps: End-to-End MLOps Recommendation System
 
-A production-style Recommendation System + MLOps project built with FastAPI, PyTorch, Docker, GitHub Actions, Matrix Factorization, and Two-Tower Retrieval.
+Production-ready recommendation system demonstrating machine learning engineering, MLOps, containerization, CI/CD, and cloud deployment.
 
 ## Overview
 
-RecSysOps is an end-to-end recommendation system designed to demonstrate how machine learning models can be trained, tracked, tested, deployed, and served through a production-style API.
+RecSysOps is an end-to-end recommendation system built using the MovieLens 100K dataset. The project trains and serves multiple recommendation algorithms through a FastAPI service deployed on AWS with automated testing and CI/CD.
 
-The project supports multiple recommendation algorithms and allows runtime model selection through a FastAPI service.
+### Models Implemented
 
-Built using the MovieLens 100K dataset.
+* Matrix Factorization
+* Two-Tower Neural Recommendation Model
+* Popularity Baseline
 
----
+### Features
 
-## Features
-
-### Recommendation Models
-
-#### Matrix Factorization
-
-* Collaborative filtering recommender
-* User-item latent embeddings
-* Model persistence using Pickle
-* Fast recommendation generation
-
-#### Two-Tower Retrieval Model
-
-* Neural recommendation architecture implemented in PyTorch
-* Separate user and item embedding towers
-* Negative sampling training pipeline
-* Model checkpoint persistence
-* Experiment tracking integration
-
----
-
-## MLOps Features
-
-### Experiment Tracking
-
-Training runs automatically generate experiment artifacts containing:
-
-* Model name
-* Hyperparameters
-* Training metrics
-* Timestamps
-
-Example:
-
-```json
-{
-  "model_name": "two_tower",
-  "params": {
-    "embedding_dim": 64,
-    "epochs": 5,
-    "learning_rate": 0.001
-  },
-  "metrics": {
-    "final_loss": 0.3782
-  }
-}
-```
-
-Stored in:
-
-```text
-artifacts/experiments/
-```
-
----
-
-### Model Persistence
-
-Saved model artifacts:
-
-```text
-artifacts/models/
-├── matrix_factorization.pkl
-└── two_tower.pt
-```
-
----
-
-### Automated Testing
-
-The project includes automated unit and integration tests covering:
-
-* API endpoints
-* Model loading
-* Recommendation generation
-* Metrics endpoint
-* Dataset creation
-* Two-Tower model
+* FastAPI inference service
+* Docker containerization
+* GitHub Actions CI/CD
+* AWS EC2 deployment
 * Experiment tracking
+* Model comparison endpoint
+* Automated testing
+* Swagger API documentation
 
-Current status:
+## Screenshots
 
-```text
-20+ passing tests
-```
+### API Documentation
 
----
+![Swagger UI](docs/images/swagger-ui.png)
 
-### CI/CD
+### Recommendation Endpoint
 
-GitHub Actions automatically runs the test suite on every push.
+![Recommendation Endpoint](docs/images/recommend-endpoint.png)
 
-Pipeline includes:
+### Model Comparison
 
-* Dependency installation
-* Test execution
-* Validation checks
+![Model Comparison](docs/images/compare-models.png)
 
----
+### CI/CD Pipeline
 
-### Docker Support
+![GitHub Actions](docs/images/github-actions.png)
 
-Application can be containerized and executed consistently across environments.
+### System Architecture
 
-```bash
-docker build -t recsysops .
-docker run -p 8000:8000 recsysops
-```
-
----
+![Architecture](docs/images/architecture-diagram.png)
 
 ## API Endpoints
 
-### Generate Recommendations
+### Health Check
 
-```http
-POST /recommend
-```
+GET /health
 
-Example request:
+Response:
 
-```json
 {
-  "user_id": 1,
-  "k": 10,
-  "model_name": "matrix_factorization"
+"status": "ok"
 }
-```
 
-Supported models:
+### Recommendations
 
-* matrix_factorization
-* two_tower
+POST /recommend
 
----
+Request:
 
-### Model Information
-
-```http
-GET /model-info
-```
-
-Returns metadata about available models.
-
----
-
-### Compare Models
-
-```http
-GET /compare-models
-```
-
-Returns a comparison of supported recommendation models.
-
----
+{
+"user_id": 1,
+"k": 10,
+"model_name": "matrix_factorization"
+}
 
 ### Metrics
 
-```http
 GET /metrics
-```
 
-Returns operational metrics.
+Returns training metrics and experiment information.
 
----
+### Model Comparison
 
-### Health Check
+GET /compare-models
 
-```http
-GET /health
-```
+Compares available recommendation models and identifies the best-performing model.
 
-Returns service health status.
-
----
-
-## Project Structure
-
-```text
-recsysops/
-│
-├── app/
-│   ├── api/
-│   ├── core/
-│   ├── routes/
-│   └── main.py
-│
-├── training/
-│   ├── data/
-│   ├── models/
-│   ├── evaluation/
-│   └── experiment_tracking/
-│
-├── inference/
-│
-├── tests/
-│
-├── artifacts/
-│   ├── experiments/
-│   └── models/
-│
-├── docker/
-│
-├── .github/workflows/
-│
-├── Dockerfile
-├── docker-compose.yml
-└── README.md
-```
-
----
-
-## Local Development
-
-Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-Run tests:
-
-```bash
-pytest
-```
-
-Run API:
-
-```bash
-python -m uvicorn app.main:app --reload
-```
-
-Swagger UI:
-
-```text
-http://localhost:8000/docs
-```
-
----
-
-## Training
-
-### Matrix Factorization
-
-```bash
-python training/train_matrix_factorization.py
-```
-
-### Two-Tower Retrieval
-
-```bash
-python training/train_two_tower.py
-```
-
-Training automatically:
-
-* Saves model artifacts
-* Logs experiment results
-* Generates reproducible outputs
-
----
-
-## Technology Stack
+## Tech Stack
 
 ### Machine Learning
 
 * PyTorch
 * NumPy
 * Pandas
-
-### Backend
-
-* FastAPI
-* Pydantic
-* Uvicorn
+* Scikit-Learn
 
 ### MLOps
 
 * Docker
 * GitHub Actions
-* Experiment Tracking
+* AWS EC2
 
-### Testing
+### Serving
 
-* Pytest
+* FastAPI
+* Uvicorn
 
-### Dataset
+## Testing
 
-* MovieLens 100K
+Run locally:
 
----
+pytest
 
-## Architecture
+## Local Development
 
-```text
-MovieLens Dataset
-        │
-        ▼
- Training Pipelines
-        │
-        ├── Matrix Factorization
-        │
-        └── Two-Tower Retrieval
-        │
-        ▼
- Model Artifacts
-        │
-        ▼
- FastAPI Inference Service
-        │
-        ▼
- Recommendation API
-```
+git clone <repo-url>
 
----
+docker build -t recsysops .
+
+docker run -p 8000:8000 recsysops
+
+Open:
+
+http://localhost:8000/docs
+
+## Live Demo
+
+Swagger UI:
+
+http://18.116.199.104:8000/docs
+
+Health Check:
+
+http://18.116.199.104:8000/health
+
+## Example Results
+
+Current deployed models:
+
+* Matrix Factorization
+* Two Tower
+* Popularity Baseline
+
+Model comparison endpoint automatically evaluates available experiment artifacts and identifies the best-performing model.
+
+## Future Improvements
+
+* Feature Store integration
+* MLflow experiment tracking
+* Kubernetes deployment
+* Continuous training pipeline
+* Monitoring and observability
 
 ## Author
 
