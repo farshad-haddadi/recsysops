@@ -8,6 +8,10 @@ from training.data.load_movielens import load_movielens_100k
 from training.data.two_tower_dataset import TwoTowerDataset
 from training.models.two_tower import TwoTowerModel
 
+from training.experiment_tracking.local_tracker import (
+    save_experiment_result,
+)
+
 
 def train_two_tower() -> None:
     ratings, items = load_movielens_100k(
@@ -118,6 +122,21 @@ def train_two_tower() -> None:
         "Saved model to "
         "artifacts/models/two_tower.pt"
     )
+
+    save_experiment_result(
+    model_name="two_tower",
+    params={
+        "embedding_dim": 64,
+        "epochs": epochs,
+        "learning_rate": 0.001,
+        "batch_size": 512,
+        "negative_samples_per_positive": 1,
+    },
+    metrics={
+        "final_loss": float(avg_loss),
+    },
+)
+
 
 
 if __name__ == "__main__":
