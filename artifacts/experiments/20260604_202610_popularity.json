@@ -1,0 +1,13 @@
+{
+  "model_name": "popularity",
+  "timestamp_utc": "20260604_202610",
+  "params": {
+    "k": 10
+  },
+  "metrics": {
+    "precision_at_k": 0.004772004241781549,
+    "recall_at_k": 0.04772004241781548,
+    "num_users_evaluated": 943.0,
+    "k": 10.0
+  }
+}

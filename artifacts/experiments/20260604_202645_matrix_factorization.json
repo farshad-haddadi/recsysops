@@ -1,0 +1,18 @@
+{
+  "model_name": "matrix_factorization",
+  "timestamp_utc": "20260604_202645",
+  "params": {
+    "k": 10,
+    "num_factors": 20,
+    "learning_rate": 0.01,
+    "regularization": 0.02,
+    "num_epochs": 10,
+    "random_state": 42
+  },
+  "metrics": {
+    "precision_at_k": 0.0036055143160127257,
+    "recall_at_k": 0.036055143160127257,
+    "num_users_evaluated": 943.0,
+    "k": 10.0
+  }
+}
