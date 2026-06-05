@@ -5,6 +5,8 @@ from fastapi import FastAPI
 from app.api.recommendations import router as recommendation_router
 from app.core.model_registry import model_registry
 
+from app.routes.compare import router as compare_router
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -19,10 +21,11 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+app.include_router(recommendation_router)
+app.include_router(compare_router)
 
 @app.get("/health")
 def health_check() -> dict[str, str]:
     return {"status": "ok"}
 
 
-app.include_router(recommendation_router)
