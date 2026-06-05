@@ -245,6 +245,4 @@ The model comparison endpoint automatically evaluates available experiment artif
 
 **Farshad Haddadi**
 
-GitHub: https://github.com/farshad-haddadi
-
-LinkedIn: https://www.linkedin.com/in/farshadhaddadi
+[GitHub](https://github.com/farshad-haddadi) | [LinkedIn](https://www.linkedin.com/in/farshadhaddadi)
