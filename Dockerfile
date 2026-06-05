@@ -10,6 +10,7 @@ COPY app ./app
 COPY inference ./inference
 COPY training ./training
 COPY artifacts ./artifacts
+COPY data ./data
 
 EXPOSE 8000
 
