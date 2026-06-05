@@ -16,16 +16,20 @@ def recommend(request: RecommendationRequest) -> RecommendationResponse:
         recommendations = model_registry.recommend(
             user_id=request.user_id,
             k=request.k,
+            model_name=request.model_name,
         )
 
         return RecommendationResponse(
             user_id=request.user_id,
-            model_name=model_registry.model_name,
+            model_name=request.model_name,
             recommendations=recommendations,
         )
 
     except RuntimeError as error:
         raise HTTPException(status_code=503, detail=str(error)) from error
+
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
 
 
 @router.get("/model-info")
