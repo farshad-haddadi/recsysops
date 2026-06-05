@@ -7,3 +7,4 @@ joblib
 pyarrow
 scikit-learn
 httpx
+torch
